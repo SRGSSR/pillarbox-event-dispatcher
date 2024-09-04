@@ -1,6 +1,7 @@
 package sse
 
 import (
+	"log"
 	"log/slog"
 	"sync"
 
@@ -18,7 +19,6 @@ func CreateClient() (string, eventChannel) {
 	defer clientMutex.Unlock()
 
 	clientId := uuid.NewString()
-	slog.Debug("Generate new client ID", "clientId", clientId)
 
 	if _, ok := clients[clientId]; !ok {
 		slog.Debug("Create new client", "clientId", clientId)
@@ -33,11 +33,9 @@ func CloseClient(clientId string) {
 	client, ok := clients[clientId]
 
 	if !ok {
-		slog.Warn("Try to close a client that doesn't exist", "clientId", clientId)
+		log.Println("Try to close a client that doesn't exist", "clientId", clientId)
 		return
 	}
-
-	slog.Debug("Close client with ID", "clientId", clientId)
 
 	close(client)
 	client = nil
@@ -49,8 +47,7 @@ func Broadcast(data string) {
 	clientMutex.Lock()
 	defer clientMutex.Unlock()
 
-	for id, client := range clients {
-		slog.Debug("Write data to client", "clientId", id)
+	for _, client := range clients {
 		client <- data
 	}
 }

@@ -4,13 +4,29 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"runtime"
 	"time"
 
 	"github.com/srgssr/pillarbox-event-dispatcher/pkg/sse"
 )
+
+// Metrics accepts POST and GET requests and returns an error otherwise.
+//
+// This function is a wrapper for the PostMetrics and GetMetrics http handlers.
+func Metrics(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostMetrics(w, r)
+		return
+	}
+
+	if r.Method == http.MethodGet {
+		GetMetrics(w, r)
+		return
+	}
+
+	http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
+}
 
 // PostMetrics accepts any JSON payload entry and forwards it to all connected clients.
 //
@@ -22,14 +38,12 @@ func PostMetrics(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		slog.Error(err.Error())
 		return
 	}
 
 	if !json.Valid(body) {
 		err = fmt.Errorf("Body (%v) is not valid JSON", body)
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		slog.Error(err.Error())
 		return
 	}
 
@@ -97,7 +111,6 @@ func Health(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		slog.Error(err.Error())
 		return
 	}
 }
