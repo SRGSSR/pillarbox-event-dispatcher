@@ -2,7 +2,6 @@ package sse
 
 import (
 	"log"
-	"log/slog"
 	"sync"
 
 	"github.com/google/uuid"
@@ -21,7 +20,6 @@ func CreateClient() (string, eventChannel) {
 	clientId := uuid.NewString()
 
 	if _, ok := clients[clientId]; !ok {
-		slog.Debug("Create new client", "clientId", clientId)
 		clients[clientId] = make(eventChannel)
 	}
 
