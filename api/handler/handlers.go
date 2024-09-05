@@ -11,28 +11,16 @@ import (
 	"github.com/srgssr/pillarbox-event-dispatcher/pkg/sse"
 )
 
-// Metrics accepts POST and GET requests and returns an error otherwise.
-//
-// This function is a wrapper for the PostMetrics and GetMetrics http handlers.
-func Metrics(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		PostMetrics(w, r)
-		return
-	}
-
-	if r.Method == http.MethodGet {
-		GetMetrics(w, r)
-		return
-	}
-
-	http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
-}
-
-// PostMetrics accepts any JSON payload entry and forwards it to all connected clients.
+// Metrics accepts any JSON payload entry and forwards it to all connected clients.
 //
 // This service acts as a passthrough, with the only check being the that the payload must be valid JSON.
 // If the payload is not a valid JSON, an error response is returned.
-func PostMetrics(w http.ResponseWriter, r *http.Request) {
+func Metrics(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	body, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 
@@ -53,12 +41,17 @@ func PostMetrics(w http.ResponseWriter, r *http.Request) {
 	sse.Broadcast(string(body))
 }
 
-// GetMetrics enables clients to listen for events via Server-Sent Events.
+// EventDispatcher enables clients to listen for events via Server-Sent Events.
 //
 // This endpoint creates a client connection and streams data to connected clients.
 //
 // When a client disconnects, the associated client ID is closed and the associated channel is distroyed.
-func GetMetrics(w http.ResponseWriter, r *http.Request) {
+func EventDispatcher(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	clientId, clientChannel := sse.CreateClient()
 
 	w.Header().Set("Content-Type", "text/event-stream")

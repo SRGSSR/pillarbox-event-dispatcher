@@ -16,9 +16,11 @@ To send events from the player, use the URL:
 
 - `https://zdkimhgwhh.eu-central-1.awsapprunner.com/metrics`
 
+  Expects a `POST` request with a valid JSON payload
+
 To listen to events to feed any tool, use the URL:
 
-- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/metrics`
+- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/event-dispatcher`
 
 To check health status, use URL:
 
@@ -36,7 +38,7 @@ Once the installation completed, on your terminal, run the command below to star
 
 To receive data, you need to connect to the SSE server. To do this, in your terminal run:
 
-- `curl -n http://localhost:3569/metrics`
+- `curl -n http://localhost:3569/event-dispatcher`
 
 *You can create as many clients as you need by simply opening as many terminal tabs as you need and running the command shown above.*
 
