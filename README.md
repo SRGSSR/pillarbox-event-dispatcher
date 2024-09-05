@@ -35,6 +35,20 @@ Change the default port on which the application runs:
 
 - `go run cmd/event_dispatcher/main.go -port ":35420"`
 
-## Build
+## Compilation
 
-- `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o pillarboxEventDispatcher cmd/event_dispatcher/main.go`
+The [Go](https://go.dev/) language makes it easy to [produce binaries](https://go.dev/doc/tutorial/compile-install) compatible with a multitude of operating systems and processor architectures. The advantage is that everything is self-contained, so there's no need to install runtimes, unlike java, javascript, php etc...
+
+To display the list of available operating systems and processor architectures:
+
+- `go tool dist list`
+
+To display the current type of operating system and processor architecture:
+
+- `go env GOOS GOARCH`
+
+To produce a MacOS ARM64-compatible binary from Linux:
+
+- `CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o pillarboxEventDispatcher cmd/event_dispatcher/main.go`
+
+*`CGO_ENABLED=0` means that the binary produced is statically-linked and needs no external dependencies to run.*
