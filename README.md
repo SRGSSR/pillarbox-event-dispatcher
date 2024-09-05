@@ -3,7 +3,28 @@
 A Go stateless micro-service that receives JSON data via a HTTP POST request and
 leverage the power of SSE to broadcast JSON data to multiple consumers.
 
-## How to run
+The goal of this service is to receive events from Pillarbox players to feed into tools that can address a wide range of use cases, such as providing a general overview of the health of our offering, or helping diagnose potential problems.
+
+> [!IMPORTANT] What this service doesn't do
+>
+> - It does not store events, even temporarily.
+> - None of the data is critical, so there's no mechanism for resend events that haven't been received *(if the data is being used to monitor products you consider critical, it's probably time to monitor those products instead)*.
+
+## Available URLs
+
+To send events from the player, use the URL:
+
+- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/metrics`
+
+To listen to events to feed any tool, use the URL:
+
+- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/metrics`
+
+To check health status, use URL:
+
+- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/health`
+
+## How to run locally
 
 To run this project on your machine you need to install the Go programming language. You'll find the installation instruction on the following [link](https://go.dev/doc/install).
 
