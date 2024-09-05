@@ -23,18 +23,17 @@ To send data to the server. In your terminal run:
 
 - `curl -X POST http://localhost:3569/metrics -H 'Content-Type: application/json' -d "{\"msg\": \"data\", \"timestamp\": \"$EPOCHSECONDS\"}"`
 
-### Server flags
+## Application configuration
 
-You have access to two flags:
+This application allows to customize the port on which it runs using the flag below:
 
 - `port` which allows to redefine the port used by the HTTP server, default value is `:3569`
-- `debug` which allows to activate the debug mode, default value is `false`
 
-#### Example
+### Example
 
-Run the server on port `:35420` in debug mode.
+Change the default port on which the application runs:
 
-- `go run cmd/event_dispatcher/main.go -port ":35420" -debug true`
+- `go run cmd/event_dispatcher/main.go -port ":35420"`
 
 ## Build
 
