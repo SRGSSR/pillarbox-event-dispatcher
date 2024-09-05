@@ -22,8 +22,10 @@ func main() {
 		Handler: serveMux,
 	}
 
-	// Endpoint used by user to send data and consumers to receive data
+	// Endpoint used by user to send data
 	serveMux.HandleFunc("/metrics", handler.Metrics)
+	// Endpoint used by clients to connect to the SSE and consume data
+	serveMux.HandleFunc("/event-dispatcher", handler.EventDispatcher)
 	// Endpoint to check the service health
 	serveMux.HandleFunc("/health", handler.Health)
 
