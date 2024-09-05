@@ -7,7 +7,7 @@ leverage the power of SSE to broadcast JSON data to multiple consumers.
 
 To run this project on your machine you need to install the Go programming language. You'll find the installation instruction on the following [link](https://go.dev/doc/install).
 
-Once the installation completed, on your terminal simply run:
+Once the installation completed, on your terminal, run the command below to start the HTTP server:
 
 Once the installation completed, on your terminal run the command below to start the HTTP server:
 
