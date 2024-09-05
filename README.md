@@ -9,9 +9,19 @@ To run this project on your machine you need to install the Go programming langu
 
 Once the installation completed, on your terminal, run the command below to start the HTTP server:
 
-Once the installation completed, on your terminal run the command below to start the HTTP server:
-
 - `go run cmd/event_dispatcher/main.go`
+
+### Receive and send data from and to the server
+
+To receive data, you need to connect to the SSE server. To do this, in your terminal run:
+
+- `curl -n http://localhost:3569/metrics`
+
+*You can create as many clients as you need by simply opening as many terminal tabs as you need and running the command shown above.*
+
+To send data to the server. In your terminal run:
+
+- `curl -X POST http://localhost:3569/metrics -H 'Content-Type: application/json' -d "{\"msg\": \"data\", \"timestamp\": \"$EPOCHSECONDS\"}"`
 
 ### Server flags
 
@@ -25,20 +35,6 @@ You have access to two flags:
 Run the server on port `:35420` in debug mode.
 
 - `go run cmd/event_dispatcher/main.go -port ":35420" -debug true`
-
-### Connect a client to the server
-
-To listen for server events you'll to connect to the SSE server. In your terminal run:
-
-- `curl -n http://localhost:3569/metrics`
-
-*You can create as many clients as you need by simply opening as many terminal tabs as you need and running the command shown above.*
-
-### Send data to the server
-
-To send JSON data to the server. In your terminal run:
-
-- `curl -X POST http://localhost:3569/metrics -H 'Content-Type: application/json' -d "{\"msg\": \"data\", \"timestamp\": \"$EPOCHSECONDS\"}"`
 
 ## Build
 
