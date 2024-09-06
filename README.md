@@ -5,7 +5,8 @@ leverage the power of SSE to broadcast JSON data to multiple consumers.
 
 The goal of this service is to receive events from Pillarbox players to feed into tools that can address a wide range of use cases, such as providing a general overview of the health of our offering, or helping diagnose potential problems.
 
-> [!IMPORTANT] What this service doesn't do
+> [!IMPORTANT]
+>  What this service doesn't do
 >
 > - It does not store events, even temporarily.
 > - None of the data is critical, so there's no mechanism for resend events that haven't been received *(if the data is being used to monitor products you consider critical, it's probably time to monitor those products instead)*.
