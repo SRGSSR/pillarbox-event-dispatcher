@@ -12,7 +12,7 @@ type eventChannel chan string
 var clients = make(map[string]eventChannel)
 var clientMutex = &sync.Mutex{}
 
-// Create a new client, assign a unique client ID and store the client in the clients map
+// CreateClient Create a new client, assign a unique client ID and store the client in the clients map
 func CreateClient() (string, eventChannel) {
 	clientMutex.Lock()
 	defer clientMutex.Unlock()
@@ -26,7 +26,7 @@ func CreateClient() (string, eventChannel) {
 	return clientId, clients[clientId]
 }
 
-// Close the client connection and the client from the clients map
+// CloseClient Close the client connection and the client from the clients map
 func CloseClient(clientId string) {
 	client, ok := clients[clientId]
 
@@ -36,11 +36,10 @@ func CloseClient(clientId string) {
 	}
 
 	close(client)
-	client = nil
 	delete(clients, clientId)
 }
 
-// Broadcast metrics data to connected clients
+// Broadcast event data to connected clients
 func Broadcast(data string) {
 	clientMutex.Lock()
 	defer clientMutex.Unlock()

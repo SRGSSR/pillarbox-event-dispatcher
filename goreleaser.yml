@@ -1,0 +1,19 @@
+project_name: pillarbox-event-dispatcher
+version: 2
+
+builds:
+  - main: ./cmd/event_dispatcher/main.go
+    ldflags: "-X main.version={{.Version}}"
+    binary: pillarbox-event-dispatcher_{{.Os}}_{{.Arch}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+release:
+  disable: true
+
+changelog:
+  disable: true

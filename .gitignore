@@ -1,0 +1,28 @@
+### Intellij ###
+.idea/
+*.iml
+*.iws
+modules.xml
+*.ipr
+cmake-build-*/
+out/
+.idea_modules/
+
+# VisualStudioCode
+.vscode-test
+.vscode
+.history
+
+# macOS
+.DS_Store
+
+### Go ###
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+dist/

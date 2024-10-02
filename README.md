@@ -1,78 +1,140 @@
 # Pillarbox Event Dispatcher
 
-A Go stateless micro-service that receives JSON data via a HTTP POST request and
-leverage the power of SSE to broadcast JSON data to multiple consumers.
+![Pillarbox logo](docs/README-images/logo.jpg)
 
-The goal of this service is to receive events from Pillarbox players to feed into tools that can address a wide range of use cases, such as providing a general overview of the health of our offering, or helping diagnose potential problems.
+Pillarbox Event Dispatcher is a stateless Go microservice that receives JSON data via HTTP POST
+requests and broadcasts the received events using Server-Sent Events (SSE) to multiple consumers.
+This service facilitates real-time event streaming for clients, offering insights into system health
+and behavior.
 
 > [!IMPORTANT]
->  What this service doesn't do
+> What this service doesn't do
 >
 > - It does not store events, even temporarily.
-> - None of the data is critical, so there's no mechanism for resend events that haven't been received *(if the data is being used to monitor products you consider critical, it's probably time to monitor those products instead)*.
+> - None of the data is critical, so there's no mechanism for resend events that haven't been
+    received *(if the data is being used to monitor products you consider critical, it's probably
+    time to monitor those products instead)*.
 
-## Available URLs
+## Quick Guide
 
-To send events from the player, use the URL:
+**Prerequisites and Requirements**
 
-- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/metrics`
+- Go 1.23 or higher
 
-  Expects a `POST` request with a valid JSON payload
+**Setup**
 
-To listen to events to feed any tool, use the URL:
+1. Run the Application:
+   ```bash
+   go run cmd/event_dispatcher/main.go
+   ```
 
-- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/event-dispatcher`
+**Available Endpoints**
 
-To check health status, use URL:
+- To send events via a `POST` request with a JSON payload, use the `/api/events` endpoint:
+   ```bash
+   curl -X POST http://localhost:8080/api/events \
+        -H 'Content-Type: application/json' \
+        -d "{\"msg\": \"data\", \"timestamp\": \"$EPOCHSECONDS\"}"
+   ```
 
-- `https://zdkimhgwhh.eu-central-1.awsapprunner.com/health`
+- To listen to events using SSE, connect to the `/events` endpoint:
+   ```bash
+   curl -n http://localhost:8080/events
+   ```
 
-## How to run locally
+- To check the health of the service, use the `/health` endpoint:
+   ```bash
+   curl http://localhost:8080/health
+   ```
 
-To run this project on your machine you need to install the Go programming language. You'll find the installation instruction on the following [link](https://go.dev/doc/install).
+**Running with Docker**
 
-Once the installation completed, on your terminal, run the command below to start the HTTP server:
+Alternatively, you can build and run the application using Docker:
 
-- `go run cmd/event_dispatcher/main.go`
+1. Build the Docker Image:
+   ```bash
+   docker build -t pillarbox-event-dispatcher .
+   ```
 
-### Receive and send data from and to the server
+2. Run the Docker Container:
+   ```bash
+   docker run -p 8080:8080 pillarbox-event-dispatcher
+   ```
 
-To receive data, you need to connect to the SSE server. To do this, in your terminal run:
+## Documentation
 
-- `curl -n http://localhost:3569/event-dispatcher`
+This project is a Go microservice that accepts incoming JSON events via HTTP POST and broadcasts
+them to clients using SSE. It operates in a stateless manner, without persisting events.
 
-*You can create as many clients as you need by simply opening as many terminal tabs as you need and running the command shown above.*
+The system is designed to support real-time streaming without data storage or recovery mechanisms.
 
-To send data to the server. In your terminal run:
+### System Flow Overview
 
-- `curl -X POST http://localhost:3569/metrics -H 'Content-Type: application/json' -d "{\"msg\": \"data\", \"timestamp\": \"$EPOCHSECONDS\"}"`
+The general flow of the service can be illustrated as follows:
 
-## Application configuration
+```mermaid
+sequenceDiagram
+  participant Client
+  participant EventDispatcher
+  participant SSEConsumer
+  SSEConsumer --) EventDispatcher: Connects and listens to events
+  Client ->> EventDispatcher: Sends POST request with JSON data
+  EventDispatcher ->> SSEConsumer: Broadcasts JSON event via SSE
+```
 
-This application allows to customize the port on which it runs using the flag below:
+### Continuous Integration
 
-- `port` which allows to redefine the port used by the HTTP server, default value is `:3569`
+This project uses GitHub Actions to automate the development workflow with the following main
+workflows:
 
-### Example
+1. **Quality Check for Pull Requests**
+   Runs static analysis and unit tests for every pull request to ensure the code meets quality
+   standards.
 
-Change the default port on which the application runs:
+2. **Release Workflow**
+   Handles versioning and releases using `semantic-release` when changes are pushed to the `main`
+   branch. This includes generating release notes and updating the repository.
 
-- `go run cmd/event_dispatcher/main.go -port ":35420"`
+3. **Deployment Workflow**
+   Builds the Docker image for the service and pushes it to an Amazon ECR repository when a new tag
+   is created.
 
-## Compilation
+## Contributing
 
-The [Go](https://go.dev/) language makes it easy to [produce binaries](https://go.dev/doc/tutorial/compile-install) compatible with a multitude of operating systems and processor architectures. The advantage is that everything is self-contained, so there's no need to install runtimes, unlike java, javascript, php etc...
+Contributions are welcome! Please follow the project’s code style and linting rules when
+contributing. Here are some commands to help you get started:
 
-To display the list of available operating systems and processor architectures:
+Check your code style by running:
 
-- `go tool dist list`
+```bash
+gofmt -l .
+```
 
-To display the current type of operating system and processor architecture:
+Apply the code style:
 
-- `go env GOOS GOARCH`
+```shell
+go fmt ./...
+```
 
-To produce a MacOS ARM64-compatible binary from Linux:
+Test for common issues by running:
 
-- `CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o pillarboxEventDispatcher cmd/event_dispatcher/main.go`
+```shell
+go vet ./...
+```
 
-*`CGO_ENABLED=0` means that the binary produced is statically-linked and needs no external dependencies to run.*
+All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+format to ensure compatibility with our automated release system. A pre-commit hook is available to
+validate commit messages.
+
+You can set up hook to automate these checks before commiting and pushing your changes, to do so
+update the Git hooks path:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Refer to our [Contribution Guide](docs/CONTRIBUTING.md) for more detailed information.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
