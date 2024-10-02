@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Define color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Create a regex for a conventional commit
+conventional_commit_regex="^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z \-]+\))?!?: .+$"
+
+# Get the commit message (the parameter we're given is just the path to the temporary file which holds the message)
+commit_message=$(cat "$1")
+
+# Check if the commit message doesn't match the conventional commit regex
+if ! echo "$commit_message" | grep -Eq "$conventional_commit_regex"; then
+    echo "${RED}The commit message does not meet the Conventional Commit standard${NC}"
+    echo "An example of a valid message is: "
+    echo "  feat(login): add the 'remember me' button"
+    echo "More details at: https://www.conventionalcommits.org/en/v1.0.0/#summary"
+    exit 1
+fi
+
+# If the commit message is correct
+echo "${GREEN}Commit message meets Conventional Commit standards...${NC}"

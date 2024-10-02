@@ -10,27 +10,27 @@ import (
 
 func main() {
 	// Command-line available flags
-	addr := flag.String("port", ":3569", "HTTP server port")
+	addr := flag.String("port", ":8080", "HTTP server port")
 
 	flag.Parse()
 
 	// HTTP request multiplexer
 	serveMux := http.NewServeMux()
 	// HTTP server parameters
-	metricsServer := &http.Server{
+	dispatcherServer := &http.Server{
 		Addr:    *addr,
 		Handler: serveMux,
 	}
 
 	// Endpoint used by user to send data
-	serveMux.HandleFunc("/metrics", handler.Metrics)
+	serveMux.HandleFunc("/api/events", handler.EventReceiver)
 	// Endpoint used by clients to connect to the SSE and consume data
-	serveMux.HandleFunc("/event-dispatcher", handler.EventDispatcher)
+	serveMux.HandleFunc("/events", handler.EventDispatcher)
 	// Endpoint to check the service health
 	serveMux.HandleFunc("/health", handler.Health)
 
 	// Run the HTTP server
-	if err := metricsServer.ListenAndServe(); err != nil {
+	if err := dispatcherServer.ListenAndServe(); err != nil {
 		log.Println(err.Error())
 	}
 }

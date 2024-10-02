@@ -11,11 +11,11 @@ import (
 	"github.com/srgssr/pillarbox-event-dispatcher/pkg/sse"
 )
 
-// Metrics accepts any JSON payload entry and forwards it to all connected clients.
+// EventReceiver accepts any JSON payload entry and forwards it to all connected clients.
 //
 // This service acts as a passthrough, with the only check being the that the payload must be valid JSON.
 // If the payload is not a valid JSON, an error response is returned.
-func Metrics(w http.ResponseWriter, r *http.Request) {
+func EventReceiver(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
 		return

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Define color codes
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Run go fmt
+echo -e "${YELLOW}Running go fmt...${NC}"
+unformatted_files=$(gofmt -l .)
+if [ -n "$unformatted_files" ]; then
+    echo -e "${RED}The following files are not properly formatted:${NC}"
+    echo "$unformatted_files"
+    echo -e "${RED}Please run 'go fmt' on these files.${NC}"
+    exit 1
+else
+    echo -e "${GREEN}All files are properly formatted ✔${NC}"
+fi
+
+# Run go vet
+echo -e "${YELLOW}Running go vet...${NC}"
+if ! go vet ./...; then
+    echo -e "${RED}go vet found issues ✘${NC}"
+    echo -e "${RED}Commit aborted.${NC}"
+    exit 1
+else
+    echo -e "${GREEN}go vet passed ✔${NC}"
+fi
+
+exit 0
