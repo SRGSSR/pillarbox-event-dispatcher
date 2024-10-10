@@ -86,7 +86,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "goreleaser build --rm-dist",
+        "prepareCmd": "./build.sh",
         "successCmd": "echo ${nextRelease.version} > VERSION"
       }
     ],
@@ -110,7 +110,7 @@
             "label": "License"
           },
           {
-            "path": "docs/README.md",
+            "path": "README.md",
             "label": "Readme"
           }
         ]
