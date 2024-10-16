@@ -84,20 +84,18 @@ sequenceDiagram
 
 ### Continuous Integration
 
-This project uses GitHub Actions to automate the development workflow with the following main
-workflows:
+This project automates its development workflow using GitHub Actions across two main workflows:
+quality checks and releases.
 
 1. **Quality Check for Pull Requests**
-   Runs static analysis and unit tests for every pull request to ensure the code meets quality
-   standards.
+   Triggered on every pull request to the `main` branch, this workflow ensures the code passes
+   static analysis and unit tests. It guarantees that any new code meets quality standards before
+   being merged into the main branch.
 
 2. **Release Workflow**
-   Handles versioning and releases using `semantic-release` when changes are pushed to the `main`
-   branch. This includes generating release notes and updating the repository.
-
-3. **Deployment Workflow**
-   Builds the Docker image for the service and pushes it to an Amazon ECR repository when a new tag
-   is created.
+   When changes are pushed to the `main` branch, this workflow handles versioning and releases using
+   `semantic-release`. It automatically bumps the version, generates release notes, creates a tag,
+   and publishes a Docker image to an Amazon ECR repository.
 
 ## Contributing
 
