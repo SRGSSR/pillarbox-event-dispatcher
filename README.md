@@ -61,6 +61,18 @@ Alternatively, you can build and run the application using Docker:
    docker run -p 8080:8080 pillarbox-event-dispatcher
    ```
 
+**Build Process with Makefile**
+
+The project includes a `Makefile` to simplify building across multiple platforms. To see all
+available commands, run:
+
+```bash
+make help
+```
+
+The binaries are output to the `dist` directory, and the build supports multiple platforms such as
+`linux/amd64`, `linux/arm64`, `darwin/amd64`, and `darwin/arm64`.
+
 ## Documentation
 
 This project is a Go microservice that accepts incoming JSON events via HTTP POST and broadcasts
