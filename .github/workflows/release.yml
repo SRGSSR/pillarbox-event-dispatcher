@@ -8,10 +8,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.semantic-release.outputs.version }}
+      version: ${{ steps.check-version.outputs.version }}
 
     permissions:
+      issues: write
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -46,7 +48,7 @@ jobs:
           npx semantic-release
 
       - name: Check version
-        id: check_version
+        id: check-version
         run: >
           if [ -f VERSION ]; then
             VERSION=$(cat VERSION)
@@ -57,7 +59,7 @@ jobs:
             echo "version=" >> $GITHUB_OUTPUT
           fi
 
-  deploy:
+  publish:
     runs-on: ubuntu-latest
     needs: release
     if: needs.release.outputs.version != ''  # Skip deploy if no version is set
@@ -87,3 +89,24 @@ jobs:
           tags: |
             ${{ env.ECR_REGISTRY }}/pillarbox-event-dispatcher:${{ needs.release.outputs.version }}
             ${{ env.ECR_REGISTRY }}/pillarbox-event-dispatcher:latest
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: publish
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.GH_DEV_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: ECS deployment
+        run: >
+          aws ecs update-service \
+            --cluster pillarbox-monitoring-cluster \
+            --service dispatch-service \
+            --force-new-deployment \
+            --region ${{ secrets.AWS_REGION }} >/dev/null

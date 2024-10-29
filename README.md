@@ -96,8 +96,7 @@ sequenceDiagram
 
 ### Continuous Integration
 
-This project automates its development workflow using GitHub Actions across two main workflows:
-quality checks and releases.
+This project automates its own development workflow using GitHub Actions:
 
 1. **Quality Check for Pull Requests**
    Triggered on every pull request to the `main` branch, this workflow ensures the code passes
@@ -105,9 +104,15 @@ quality checks and releases.
    being merged into the main branch.
 
 2. **Release Workflow**
-   When changes are pushed to the `main` branch, this workflow handles versioning and releases using
+   When changes are pushed to `main`, this workflow handles versioning and releases with
    `semantic-release`. It automatically bumps the version, generates release notes, creates a tag,
-   and publishes a Docker image to an Amazon ECR repository.
+   and publishes a Docker image to Amazon ECR. This new version is automatically deployed to the
+   development environment.
+
+3. **Production deployment**
+   To deploy a specific version to production, manually trigger the `Promote Version to Stable`
+   workflow from the Actions tab, inputting the desired version number (e.g., 1.0.0). This workflow
+   tags the selected version as stable in the ECR, and forces a new deployment on ECS.
 
 ## Contributing
 

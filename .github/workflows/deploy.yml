@@ -1,0 +1,45 @@
+name: Promote Version to Stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Enter the version to promote as stable (e.g., 1.0.0)"
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    env:
+      ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.GH_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Pull the selected version of the image
+        run: |
+          docker pull ${{ env.ECR_REGISTRY }}/pillarbox-event-dispatcher:${{ github.event.inputs.version }}
+
+      - name: Tag the image as stable
+        run: |
+          docker tag ${{ env.ECR_REGISTRY }}/pillarbox-event-dispatcher:${{ github.event.inputs.version }} ${{ env.ECR_REGISTRY }}/pillarbox-event-dispatcher:stable
+          docker push ${{ env.ECR_REGISTRY }}/pillarbox-event-dispatcher:stable
+
+      - name: ECS deployment
+        run: >
+          aws ecs update-service \
+            --cluster pillarbox-monitoring-cluster \
+            --service dispatch-service \
+            --force-new-deployment \
+            --region ${{ secrets.AWS_REGION }} >/dev/null
