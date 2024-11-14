@@ -37,7 +37,11 @@ func EventReceiver(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	ip := r.RemoteAddr
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+
 	data := map[string]any{}
 	if err := json.Unmarshal(body, &data); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
