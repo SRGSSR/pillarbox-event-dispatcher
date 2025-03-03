@@ -16,6 +16,13 @@ import (
 // This service acts as a passthrough, with the only check being the that the payload must be valid JSON.
 // If the payload is not a valid JSON, an error response is returned.
 func EventReceiver(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Allow", "POST, OPTIONS")
+		w.WriteHeader(http.StatusOK)
+
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
 		return
