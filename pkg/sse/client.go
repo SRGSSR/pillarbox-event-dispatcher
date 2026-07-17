@@ -28,6 +28,9 @@ func CreateClient() (string, eventChannel) {
 
 // CloseClient Close the client connection and the client from the clients map
 func CloseClient(clientId string) {
+	clientMutex.Lock()
+	defer clientMutex.Unlock()
+
 	client, ok := clients[clientId]
 
 	if !ok {
@@ -45,6 +48,9 @@ func Broadcast(data string) {
 	defer clientMutex.Unlock()
 
 	for _, client := range clients {
-		client <- data
+		select {
+		case client <- data:
+		default:
+		}
 	}
 }
